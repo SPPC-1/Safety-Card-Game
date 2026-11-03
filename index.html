@@ -6,44 +6,263 @@
 <title>중대재해 예방 경진대회 · 안전카드 기억력 챌린지</title>
 <style>
 :root{--bg:#0d1720;--panel:#152330;--card:#1c2f3e;--line:#294355;--text:#f5f8fa;--muted:#9fb1bf;--accent:#f4c542;--good:#4bd08b;--bad:#ff6b6b}
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(180deg,#0b141c,#101e29);color:var(--text)}
-main{max-width:980px;margin:0 auto;padding:22px 14px 50px}.eyebrow{font-size:12px;letter-spacing:.16em;color:var(--accent);font-weight:800}.top{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap}.top h1{font-size:clamp(27px,6vw,48px);line-height:1;margin:8px 0 4px}.sub{color:var(--muted);font-size:14px}.btn{border:0;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer;min-height:46px}.btn.primary{background:var(--accent);color:#1a1a1a}.btn.ghost{background:#213746;color:var(--text);border:1px solid var(--line)}.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;margin-top:18px}.panel{background:rgba(21,35,48,.94);border:1px solid var(--line);border-radius:20px;padding:16px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.stat{background:#10202c;border:1px solid var(--line);border-radius:15px;padding:11px;text-align:center}.stat small{display:block;color:var(--muted);font-size:11px}.stat strong{font-size:20px}.name-row{display:flex;gap:8px;margin-bottom:12px}.name-row input{flex:1;min-width:0;border:1px solid var(--line);border-radius:13px;background:#0f1c26;color:var(--text);padding:12px;font-size:16px}.hint{color:var(--muted);font-size:12px;margin:4px 0 12px}.countdown{display:none;text-align:center;font-size:20px;font-weight:900;padding:11px;margin-bottom:10px;border-radius:13px;background:#0f1c26;border:1px solid var(--line)}.board{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;touch-action:manipulation}.card{position:relative;aspect-ratio:4/5;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#1b3343,#142633);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;padding:5px;user-select:none;-webkit-user-select:none;overflow:hidden}.card:active{transform:scale(.98)}.card .back{font-size:27px;font-weight:900;color:var(--accent)}.card .face{display:none}.card.open .back,.card.matched .back{display:none}.card.open .face,.card.matched .face{display:block}.card.matched{outline:2px solid var(--good);opacity:.6}.emoji{font-size:29px;line-height:1}.label{font-size:11px;font-weight:800;margin-top:5px}.result{display:none;margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:16px;background:#10202c}.score{font-size:34px;font-weight:950;color:var(--accent)}.score-breakdown{color:var(--muted);font-size:13px;line-height:1.55}.rank-title{font-size:20px;font-weight:900;margin-bottom:4px}.rank-sub{color:var(--muted);font-size:12px;margin-bottom:10px}.rank-list{display:grid;gap:7px}.rank-row{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:8px;padding:9px;border:1px solid var(--line);border-radius:13px;background:#10202c}.rank-row .who{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rank-row .meta{color:var(--muted);font-size:11px}.rank-row .pts{font-weight:900;color:var(--accent)}.foot{margin-top:10px;color:var(--muted);font-size:11px}.status{font-size:12px;color:var(--muted);margin-top:8px}.warn{color:#ffcf70}.good{color:var(--good)}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(180deg,#0b141c,#101e29);color:var(--text)}
+main{max-width:980px;margin:0 auto;padding:22px 14px 50px}
+.eyebrow{font-size:12px;letter-spacing:.16em;color:var(--accent);font-weight:800}
+.top{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap}
+.top h1{font-size:clamp(27px,6vw,48px);line-height:1;margin:8px 0 4px}
+.sub{color:var(--muted);font-size:14px}
+.btn{border:0;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer;min-height:46px}
+.btn.primary{background:var(--accent);color:#1a1a1a}
+.btn.ghost{background:#213746;color:var(--text);border:1px solid var(--line)}
+.btn.danger{background:var(--bad);color:white}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;margin-top:18px}
+.panel{background:rgba(21,35,48,.94);border:1px solid var(--line);border-radius:20px;padding:16px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:#10202c;border:1px solid var(--line);border-radius:15px;padding:11px;text-align:center}
+.stat small{display:block;color:var(--muted);font-size:11px}
+.stat strong{font-size:20px}
+.name-row{display:flex;gap:8px;margin-bottom:12px}
+.name-row input{flex:1;min-width:0;border:1px solid var(--line);border-radius:13px;background:#0f1c26;color:var(--text);padding:12px;font-size:16px}
+.hint{color:var(--muted);font-size:12px;margin:4px 0 12px}
+.countdown{display:none;text-align:center;font-size:20px;font-weight:900;padding:11px;margin-bottom:10px;border-radius:13px;background:#0f1c26;border:1px solid var(--line)}
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;touch-action:manipulation}
+.card{position:relative;aspect-ratio:4/5;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#1b3343,#142633);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;text-align:center;padding:5px;user-select:none;-webkit-user-select:none;overflow:hidden}
+.card:active{transform:scale(.98)}
+.card .back{font-size:27px;font-weight:900;color:var(--accent)}
+.card .face{display:none}
+.card.open .back,.card.matched .back{display:none}
+.card.open .face,.card.matched .face{display:block}
+.card.matched{outline:2px solid var(--good);opacity:.6}
+.emoji{font-size:29px;line-height:1}
+.label{font-size:11px;font-weight:800;margin-top:5px}
+.result{display:none;margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:16px;background:#10202c}
+.score{font-size:34px;font-weight:950;color:var(--accent)}
+.score-breakdown{color:var(--muted);font-size:13px;line-height:1.55}
+.rank-title{font-size:20px;font-weight:900;margin-bottom:4px}
+.rank-sub{color:var(--muted);font-size:12px;margin-bottom:10px}
+.rank-list{display:grid;gap:7px}
+.rank-row{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:8px;padding:9px;border:1px solid var(--line);border-radius:13px;background:#10202c}
+.rank-row .who{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-row .meta{color:var(--muted);font-size:11px}
+.rank-row .pts{font-weight:900;color:var(--accent)}
+.foot{margin-top:10px;color:var(--muted);font-size:11px}
+.status{font-size:12px;color:var(--muted);margin-top:8px}
+.warn{color:#ffcf70}.good{color:var(--good)}.bad{color:var(--bad)}
+.admin-link{margin-top:12px;text-align:right}.admin-link button{background:transparent;border:0;color:var(--muted);font-size:11px;cursor:pointer}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);align-items:center;justify-content:center;padding:16px;z-index:9999}
+.modal.show{display:flex}
+.modal-box{width:min(420px,100%);background:#152330;border:1px solid var(--line);border-radius:18px;padding:18px}
+.modal-box h3{margin:0 0 6px}
+.modal-box input{width:100%;margin-top:8px;border:1px solid var(--line);border-radius:12px;background:#0f1c26;color:var(--text);padding:12px;font-size:15px}
+.modal-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 @media(max-width:760px){.layout{grid-template-columns:1fr}.board{gap:6px}.panel{padding:12px}.card{border-radius:12px}.emoji{font-size:25px}.label{font-size:10px}.stats{gap:6px}.stat{padding:9px 5px}.stat strong{font-size:18px}}
 </style>
 </head>
 <body><main>
-<div class="top"><div><div class="eyebrow">중대재해 예방 경진대회</div><h1>안전카드 기억력 챌린지</h1><div class="sub">4×5 카드 · 10쌍 · 5초 암기 · 30초 도전</div></div><button id="resetBtn" class="btn ghost">다시 시작 ↻</button></div>
+<div class="top">
+  <div>
+    <div class="eyebrow">중대재해 예방 경진대회</div>
+    <h1>안전카드 기억력 챌린지</h1>
+    <div class="sub">4×5 카드 · 10쌍 · 5초 암기 · 30초 도전</div>
+  </div>
+  <button id="resetBtn" class="btn ghost">다시 시작 ↻</button>
+</div>
+
 <div class="layout">
 <section class="panel">
-  <div class="stats"><div class="stat"><small>남은 시간</small><strong id="time">30.0초</strong></div><div class="stat"><small>맞춘 카드</small><strong id="pairs">0 / 10</strong></div><div class="stat"><small>시도</small><strong id="tries">0회</strong></div></div>
-  <div class="name-row"><input id="name" maxlength="12" placeholder="예: 김 OO" autocomplete="off"><button id="startBtn" class="btn primary">게임 시작 ▶</button></div>
+  <div class="stats">
+    <div class="stat"><small>남은 시간</small><strong id="time">30.0초</strong></div>
+    <div class="stat"><small>맞춘 카드</small><strong id="pairs">0 / 10</strong></div>
+    <div class="stat"><small>시도</small><strong id="tries">0회</strong></div>
+  </div>
+
+  <div class="name-row">
+    <input id="name" maxlength="12" placeholder="예: 김 OO" autocomplete="off">
+    <button id="startBtn" class="btn primary">게임 시작 ▶</button>
+  </div>
+
   <div class="hint">환산점수 100점 만점 · 성공 80점 + 시간 15점 + 정확도 5점</div>
   <div id="countdown" class="countdown"></div>
-  <div id="board" class="board" aria-label="안전카드 게임판"></div>
-  <div id="result" class="result"><div id="resultHeadline" style="font-weight:900;font-size:18px"></div><div id="finalScore" class="score"></div><div id="breakdown" class="score-breakdown"></div><div style="margin-top:10px"><button id="saveBtn" class="btn primary">기록 저장</button> <button id="retryBtn" class="btn ghost">재도전</button></div></div>
-  <div id="status" class="status">TOP 10 공유 기능은 Supabase 설정 후 활성화됩니다.</div>
+  <div id="board" class="board"></div>
+
+  <div id="result" class="result">
+    <div id="resultHeadline" style="font-weight:900;font-size:18px"></div>
+    <div id="finalScore" class="score"></div>
+    <div id="breakdown" class="score-breakdown"></div>
+    <div style="margin-top:10px">
+      <button id="saveBtn" class="btn primary">기록 저장</button>
+      <button id="retryBtn" class="btn ghost">재도전</button>
+    </div>
+  </div>
+
+  <div id="status" class="status"></div>
+  <div class="admin-link"><button id="adminOpenBtn">관리자</button></div>
 </section>
-<aside class="panel"><div class="rank-title">🏆 TOP 10</div><div class="rank-sub">최고 점수 기준 · 동일 이름은 최고 기록만 반영</div><div id="ranking" class="rank-list"></div><div class="foot">공용 순위표는 설정 완료 시 모든 참가자에게 동일하게 표시됩니다.</div></aside>
+
+<aside class="panel">
+  <div class="rank-title">🏆 TOP 10</div>
+  <div class="rank-sub">최고 점수 기준 · 동일 이름은 최고 기록만 반영</div>
+  <div id="ranking" class="rank-list"></div>
+  <div class="foot">모든 참가자에게 동일한 순위표가 표시됩니다.</div>
+</aside>
 </div>
 </main>
+
+<div id="adminModal" class="modal">
+  <div class="modal-box">
+    <h3>관리자 기록 초기화</h3>
+    <div class="hint">관리자 계정으로 로그인한 경우에만 전체 기록 삭제가 가능합니다.</div>
+    <input id="adminEmail" type="email" placeholder="관리자 이메일">
+    <input id="adminPassword" type="password" placeholder="비밀번호">
+    <div class="modal-actions">
+      <button id="adminLoginBtn" class="btn primary">로그인</button>
+      <button id="adminResetBtn" class="btn danger" style="display:none">⚠ 전체 기록 초기화</button>
+      <button id="adminCloseBtn" class="btn ghost">닫기</button>
+    </div>
+    <div id="adminStatusMsg" class="status"></div>
+  </div>
+</div>
+
 <script>
-const CFG={SUPABASE_URL:'https://ejzbelmlwojexgdhdgtb.supabase.co',SUPABASE_ANON_KEY:'sb_publishable_gW2HIn-QHAtlftpzFTMq-w_LZdSRret'};
-const ITEMS=[['⛑️','안전모'],['🥽','보안경'],['🧤','보호장갑'],['🦺','안전조끼'],['🧯','소화기'],['🚧','안전바리케이드'],['⚠️','위험경고'],['🪜','사다리'],['🔒','LOTO'],['❤️‍🩹','응급처치']];
+const CFG={
+  SUPABASE_URL:'https://ejzbelmlwojexgdhdgtb.supabase.co',
+  SUPABASE_ANON_KEY:'sb_publishable_gW2HIn-QHAtlftpzFTMq-w_LZdSRret'
+};
+
+const ITEMS=[
+  ['⛑️','안전모'],['🥽','보안경'],['🧤','보호장갑'],['🦺','안전조끼'],
+  ['🧯','소화기'],['🚧','안전바리케이드'],['⚠️','위험경고'],['🪜','사다리'],
+  ['🔒','LOTO'],['❤️‍🩹','응급처치']
+];
+
 const GAME=30, PREVIEW=5, MISMATCH=700, INPUT_GUARD=100;
-let deck=[],first=null,pairs=0,tries=0,playing=false,previewing=false,startAt=0,endAt=0,timer=null,previewTimer=null,lastTap=0,pendingTimers=[],resultData=null;
+let deck=[],first=null,pairs=0,tries=0,playing=false,previewing=false,endAt=0,timer=null,previewTimer=null,lastTap=0,pendingTimers=[],resultData=null;
 const $=s=>document.querySelector(s), board=$('#board');
+
 function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function build(){deck=shuf(ITEMS.flatMap((x,id)=>[{id,e:x[0],n:x[1],open:false,matched:false,pending:false},{id,e:x[0],n:x[1],open:false,matched:false,pending:false}]));board.innerHTML='';deck.forEach((c,i)=>{const b=document.createElement('button');b.className='card';b.type='button';b.dataset.i=i;b.innerHTML='<span class="back">＋</span><span class="face"><span class="emoji">'+c.e+'</span><span class="label">'+c.n+'</span></span>';b.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&e.isPrimary===false)return});b.addEventListener('click',cardClick);board.appendChild(b)});renderAll()}
-function render(i){const c=deck[i],b=board.children[i];if(!b)return;b.classList.toggle('open',c.open);b.classList.toggle('matched',c.matched);b.disabled=!playing||c.matched||c.pending}
+function build(){
+  deck=shuf(ITEMS.flatMap((x,id)=>[
+    {id,e:x[0],n:x[1],open:false,matched:false,pending:false},
+    {id,e:x[0],n:x[1],open:false,matched:false,pending:false}
+  ]));
+  board.innerHTML='';
+  deck.forEach((c,i)=>{
+    const b=document.createElement('button');
+    b.className='card'; b.type='button'; b.dataset.i=i;
+    b.innerHTML='<span class="back">＋</span><span class="face"><span class="emoji">'+c.e+'</span><span class="label">'+c.n+'</span></span>';
+    b.addEventListener('click',cardClick);
+    board.appendChild(b);
+  });
+  renderAll();
+}
+function render(i){
+  const c=deck[i],b=board.children[i];
+  if(!b)return;
+  b.classList.toggle('open',c.open);
+  b.classList.toggle('matched',c.matched);
+  b.disabled=!playing||c.matched||c.pending;
+}
 function renderAll(){deck.forEach((_,i)=>render(i));$('#pairs').textContent=pairs+' / 10';$('#tries').textContent=tries+'회'}
-function cardClick(e){const now=performance.now();if(now-lastTap<INPUT_GUARD)return;lastTap=now;if(!playing||previewing)return;const i=+e.currentTarget.dataset.i,c=deck[i];if(c.open||c.matched||c.pending)return;c.open=true;render(i);if(first===null){first=i;return}const a=first,b=i;first=null;tries++;$('#tries').textContent=tries+'회';const ca=deck[a],cb=deck[b];if(ca.id===cb.id){ca.matched=cb.matched=true;pairs++;render(a);render(b);$('#pairs').textContent=pairs+' / 10';if(pairs===10)finish(true);return}ca.pending=cb.pending=true;render(a);render(b);const t=setTimeout(()=>{if(!ca.matched){ca.open=false;ca.pending=false;render(a)}if(!cb.matched){cb.open=false;cb.pending=false;render(b)}},MISMATCH);pendingTimers.push(t)}
-function clearTimers(){if(timer)clearInterval(timer);if(previewTimer)clearInterval(previewTimer);pendingTimers.forEach(clearTimeout);timer=previewTimer=null;pendingTimers=[]}
-function start(){const n=$('#name').value.trim();if(!n){$('#status').innerHTML='<span class="warn">참가자 이름을 입력해주세요.</span>';$('#name').focus();return}clearTimers();pairs=tries=0;first=null;playing=false;previewing=true;resultData=null;$('#result').style.display='none';$('#startBtn').disabled=true;$('#name').disabled=true;$('#time').textContent='30.0초';build();deck.forEach(c=>c.open=true);renderAll();$('#countdown').style.display='block';let s=PREVIEW;$('#countdown').textContent='카드 위치를 기억하세요 · '+s+'초';previewTimer=setInterval(()=>{s--;if(s>0){$('#countdown').textContent='카드 위치를 기억하세요 · '+s+'초';return}clearInterval(previewTimer);previewTimer=null;deck.forEach(c=>{c.open=false;c.pending=false});previewing=false;playing=true;startAt=performance.now();endAt=startAt+GAME*1000;renderAll();$('#countdown').textContent='START!';setTimeout(()=>$('#countdown').style.display='none',260);timer=setInterval(tick,50)},1000)}
-function tick(){if(!playing)return;const rem=Math.max(0,(endAt-performance.now())/1000);$('#time').textContent=rem.toFixed(1)+'초';if(rem<=0)finish(false)}
-function score(completed,rem){const success=pairs*8;const time=completed?(rem/GAME)*15:0;const extra=Math.max(0,tries-pairs);const accuracy=Math.max(0,5-extra*.5);return{success,time,accuracy,total:Math.min(100,success+time+accuracy)}}
-function finish(completed){if(!playing)return;playing=false;if(timer)clearInterval(timer);timer=null;const rem=Math.max(0,(endAt-performance.now())/1000);pendingTimers.forEach(clearTimeout);pendingTimers=[];deck.forEach(c=>c.pending=false);renderAll();$('#time').textContent=rem.toFixed(1)+'초';const sc=score(completed,rem),name=$('#name').value.trim();resultData={name,score:+sc.total.toFixed(1),pairs,remaining:+rem.toFixed(1),tries};$('#resultHeadline').textContent=completed?'10쌍 전부 성공!':'30초 도전 종료';$('#finalScore').textContent=sc.total.toFixed(1)+'점';$('#breakdown').innerHTML='성공점수 '+sc.success.toFixed(1)+' / 80점<br>시간점수 '+sc.time.toFixed(1)+' / 15점<br>정확도점수 '+sc.accuracy.toFixed(1)+' / 5점';$('#result').style.display='block';$('#startBtn').disabled=false;$('#name').disabled=false;$('#status').innerHTML='<span class="good">기록 저장 버튼을 눌러 TOP 10에 반영하세요.</span>'}
-function configured(){return !CFG.SUPABASE_URL.startsWith('YOUR_')&&!CFG.SUPABASE_ANON_KEY.startsWith('YOUR_')}
-async function api(path,opt={}){const r=await fetch(CFG.SUPABASE_URL+'/rest/v1/'+path,{...opt,headers:{apikey:CFG.SUPABASE_ANON_KEY,Authorization:'Bearer '+CFG.SUPABASE_ANON_KEY,'Content-Type':'application/json',...(opt.headers||{})}});if(!r.ok)throw new Error(await r.text());return r.status===204?null:r.json()}
+function cardClick(e){
+  const now=performance.now();
+  if(now-lastTap<INPUT_GUARD)return;
+  lastTap=now;
+  if(!playing||previewing)return;
+  const i=+e.currentTarget.dataset.i,c=deck[i];
+  if(c.open||c.matched||c.pending)return;
+  c.open=true; render(i);
+  if(first===null){first=i;return}
+
+  const a=first,b=i; first=null; tries++; $('#tries').textContent=tries+'회';
+  const ca=deck[a],cb=deck[b];
+
+  if(ca.id===cb.id){
+    ca.matched=cb.matched=true;
+    pairs++; render(a); render(b); $('#pairs').textContent=pairs+' / 10';
+    if(pairs===10)finish(true);
+    return;
+  }
+
+  ca.pending=cb.pending=true; render(a); render(b);
+  const t=setTimeout(()=>{
+    ca.open=false; ca.pending=false; render(a);
+    cb.open=false; cb.pending=false; render(b);
+  },MISMATCH);
+  pendingTimers.push(t);
+}
+function clearTimers(){
+  if(timer)clearInterval(timer);
+  if(previewTimer)clearInterval(previewTimer);
+  pendingTimers.forEach(clearTimeout);
+  pendingTimers=[];
+}
+function start(){
+  const n=$('#name').value.trim();
+  if(!n){$('#status').innerHTML='<span class="warn">참가자 이름을 입력해주세요.</span>';return}
+
+  clearTimers(); pairs=tries=0; first=null; playing=false; previewing=true; resultData=null;
+  $('#result').style.display='none'; $('#startBtn').disabled=true; $('#name').disabled=true; $('#time').textContent='30.0초';
+  build(); deck.forEach(c=>c.open=true); renderAll();
+
+  $('#countdown').style.display='block';
+  let s=PREVIEW; $('#countdown').textContent='카드 위치를 기억하세요 · '+s+'초';
+
+  previewTimer=setInterval(()=>{
+    s--;
+    if(s>0){$('#countdown').textContent='카드 위치를 기억하세요 · '+s+'초';return}
+    clearInterval(previewTimer);
+    deck.forEach(c=>c.open=false);
+    previewing=false; playing=true; endAt=performance.now()+GAME*1000; renderAll();
+    $('#countdown').textContent='START!';
+    setTimeout(()=>$('#countdown').style.display='none',300);
+    timer=setInterval(tick,50);
+  },1000);
+}
+function tick(){
+  if(!playing)return;
+  const rem=Math.max(0,(endAt-performance.now())/1000);
+  $('#time').textContent=rem.toFixed(1)+'초';
+  if(rem<=0)finish(false);
+}
+function score(completed,rem){
+  const success=pairs*8;
+  const time=completed?(rem/GAME)*15:0;
+  const extra=Math.max(0,tries-pairs);
+  const accuracy=Math.max(0,5-extra*.5);
+  return {success,time,accuracy,total:Math.min(100,success+time+accuracy)};
+}
+function finish(completed){
+  if(!playing)return;
+  playing=false; clearInterval(timer);
+  const rem=Math.max(0,(endAt-performance.now())/1000);
+  pendingTimers.forEach(clearTimeout); pendingTimers=[];
+  deck.forEach(c=>c.pending=false); renderAll();
+
+  const sc=score(completed,rem),name=$('#name').value.trim();
+  resultData={name,score:+sc.total.toFixed(1),pairs,remaining:+rem.toFixed(1),tries};
+
+  $('#resultHeadline').textContent=completed?'10쌍 전부 성공!':'30초 도전 종료';
+  $('#finalScore').textContent=sc.total.toFixed(1)+'점';
+  $('#breakdown').innerHTML='성공점수 '+sc.success.toFixed(1)+' / 80점<br>시간점수 '+sc.time.toFixed(1)+' / 15점<br>정확도점수 '+sc.accuracy.toFixed(1)+' / 5점';
+  $('#result').style.display='block';
+  $('#startBtn').disabled=false; $('#name').disabled=false;
+}
+
+async function api(path,opt={}){
+  const r=await fetch(CFG.SUPABASE_URL+'/rest/v1/'+path,{
+    ...opt,
+    headers:{
+      apikey:CFG.SUPABASE_ANON_KEY,
+      Authorization:'Bearer '+CFG.SUPABASE_ANON_KEY,
+      'Content-Type':'application/json',
+      ...(opt.headers||{})
+    }
+  });
+  if(!r.ok)throw new Error(await r.text());
+  return r.status===204?null:r.json();
+}
 function isBetterRecord(next,prev){
   if(!prev)return true;
   if(next.score!==Number(prev.score))return next.score>Number(prev.score);
@@ -53,34 +272,118 @@ function isBetterRecord(next,prev){
 }
 async function save(){
   if(!resultData)return;
-  if(!configured()){
-    $('#status').innerHTML='<span class="warn">공용 랭킹 DB가 아직 연결되지 않았습니다. README의 Supabase 설정을 완료해주세요.</span>';
-    return;
-  }
   try{
     const qName=encodeURIComponent(resultData.name);
     const existing=await api('scores?select=name,score,pairs,remaining,tries&name=eq.'+qName+'&limit=1');
-    const prev=existing&&existing[0]?existing[0]:null;
+    const prev=existing?.[0]||null;
+
     if(prev&&!isBetterRecord(resultData,prev)){
-      $('#status').innerHTML='<span class="warn">기존 최고 기록이 더 높아 유지했습니다. 현재 최고점: '+Number(prev.score).toFixed(1)+'점</span>';
-      await loadRank();
+      $('#status').innerHTML='<span class="warn">기존 최고 기록을 유지했습니다. 현재 최고점: '+Number(prev.score).toFixed(1)+'점</span>';
       return;
     }
+
     await api('scores?on_conflict=name',{
       method:'POST',
       headers:{Prefer:'resolution=merge-duplicates'},
       body:JSON.stringify(resultData)
     });
-    $('#status').innerHTML='<span class="good">'+(prev?'최고 기록을 갱신했습니다!':'기록 저장 완료!')+'</span>';
-    await loadRank();
-  }catch(err){
-    $('#status').textContent='저장 오류: '+err.message;
+
+    $('#status').innerHTML='<span class="good">'+(prev?'최고 기록 갱신!':'기록 저장 완료!')+'</span>';
+    loadRank();
+  }catch(e){$('#status').textContent='저장 오류: '+e.message}
+}
+async function loadRank(){
+  try{
+    const rows=await api('scores?select=name,score,pairs,remaining,tries&order=score.desc,remaining.desc,tries.asc&limit=10');
+    const r=$('#ranking'); r.innerHTML='';
+    if(!rows.length){r.innerHTML='<div class="rank-sub">아직 저장된 기록이 없습니다.</div>';return}
+    rows.forEach((x,i)=>{
+      const d=document.createElement('div');
+      d.className='rank-row';
+      d.innerHTML='<div>'+(i<3?['🥇','🥈','🥉'][i]:i+1)+'</div><div><div class="who"></div><div class="meta">'+x.pairs+'쌍 · '+x.tries+'회 · '+Number(x.remaining).toFixed(1)+'초 남음</div></div><div class="pts">'+Number(x.score).toFixed(1)+'</div>';
+      d.querySelector('.who').textContent=x.name;
+      r.appendChild(d);
+    });
+  }catch(e){$('#status').textContent='순위 조회 오류: '+e.message}
+}
+
+/* 관리자 */
+let adminToken=null;
+
+async function authLogin(email,password){
+  const r=await fetch(CFG.SUPABASE_URL+'/auth/v1/token?grant_type=password',{
+    method:'POST',
+    headers:{apikey:CFG.SUPABASE_ANON_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({email,password})
+  });
+  const data=await r.json();
+  if(!r.ok)throw new Error(data.message||data.msg||'로그인 실패');
+  return data;
+}
+async function adminLogin(){
+  const email=$('#adminEmail').value.trim();
+  const password=$('#adminPassword').value;
+  if(!email||!password){$('#adminStatusMsg').textContent='이메일과 비밀번호를 입력하세요.';return}
+  try{
+    const s=await authLogin(email,password);
+    adminToken=s.access_token;
+    $('#adminResetBtn').style.display='inline-block';
+    $('#adminStatusMsg').innerHTML='<span class="good">관리자 로그인 성공</span>';
+  }catch(e){
+    adminToken=null;
+    $('#adminResetBtn').style.display='none';
+    $('#adminStatusMsg').innerHTML='<span class="bad">로그인 실패</span>';
   }
 }
-async function loadRank(){if(!configured()){renderDemoRank();return}try{const rows=await api('scores?select=name,score,pairs,remaining,tries&order=score.desc,remaining.desc,tries.asc&limit=10');renderRank(rows)}catch(err){$('#status').textContent='순위 조회 오류: '+err.message}}
-function renderDemoRank(){renderRank([])}
-function renderRank(rows){const r=$('#ranking');r.innerHTML='';if(!rows.length){r.innerHTML='<div class="rank-sub">아직 저장된 기록이 없습니다.</div>';return}rows.forEach((x,i)=>{const d=document.createElement('div');d.className='rank-row';d.innerHTML='<div>'+(i<3?['🥇','🥈','🥉'][i]:i+1)+'</div><div><div class="who"></div><div class="meta">'+x.pairs+'쌍 · '+x.tries+'회 · '+x.remaining.toFixed(1)+'초 남음</div></div><div class="pts">'+x.score.toFixed(1)+'</div>';d.querySelector('.who').textContent=x.name;r.appendChild(d)})}
-$('#startBtn').addEventListener('click',start);$('#retryBtn').addEventListener('click',start);$('#resetBtn').addEventListener('click',()=>{clearTimers();playing=previewing=false;pairs=tries=0;first=null;$('#result').style.display='none';$('#name').disabled=false;$('#startBtn').disabled=false;$('#time').textContent='30.0초';build()});$('#saveBtn').addEventListener('click',save);$('#name').addEventListener('keydown',e=>{if(e.key==='Enter')start()});
-build();loadRank();setInterval(()=>{if(configured())loadRank()},5000);
+async function adminResetAll(){
+  if(!adminToken)return;
+  if(!confirm('모든 참가자 기록을 삭제하시겠습니까?'))return;
+  if(!confirm('정말 초기화합니다. 되돌릴 수 없습니다. 계속할까요?'))return;
+
+  const r=await fetch(CFG.SUPABASE_URL+'/rest/v1/scores?name=neq.__never_match__',{
+    method:'DELETE',
+    headers:{
+      apikey:CFG.SUPABASE_ANON_KEY,
+      Authorization:'Bearer '+adminToken,
+      Prefer:'return=minimal'
+    }
+  });
+
+  if(!r.ok){
+    $('#adminStatusMsg').innerHTML='<span class="bad">초기화 실패: 삭제 권한 설정을 확인하세요.</span>';
+    return;
+  }
+
+  $('#adminStatusMsg').innerHTML='<span class="good">전체 기록을 초기화했습니다.</span>';
+  loadRank();
+}
+
+$('#startBtn').addEventListener('click',start);
+$('#retryBtn').addEventListener('click',start);
+$('#saveBtn').addEventListener('click',save);
+$('#resetBtn').addEventListener('click',()=>{
+  clearTimers(); playing=previewing=false; pairs=tries=0; first=null;
+  $('#result').style.display='none'; $('#name').disabled=false; $('#startBtn').disabled=false;
+  $('#time').textContent='30.0초'; build();
+});
+$('#name').addEventListener('keydown',e=>{if(e.key==='Enter')start()});
+
+$('#adminOpenBtn').addEventListener('click',()=>$('#adminModal').classList.add('show'));
+$('#adminCloseBtn').addEventListener('click',()=>{
+  $('#adminModal').classList.remove('show');
+  $('#adminPassword').value='';
+  $('#adminResetBtn').style.display='none';
+  $('#adminStatusMsg').textContent='';
+  adminToken=null;
+});
+$('#adminLoginBtn').addEventListener('click',adminLogin);
+$('#adminResetBtn').addEventListener('click',adminResetAll);
+$('#adminPassword').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin()});
+$('#adminModal').addEventListener('click',e=>{if(e.target===$('#adminModal'))$('#adminCloseBtn').click()});
+
+build();
+loadRank();
+setInterval(loadRank,5000);
 </script>
-</body></html>
+</body>
+</html>
