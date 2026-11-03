@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>안전카드 게임 관리자</title>
+<style>
+:root{--bg:#0d1720;--panel:#152330;--line:#294355;--text:#f5f8fa;--muted:#9fb1bf;--accent:#f4c542;--good:#4bd08b;--bad:#ff6b6b}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(180deg,#0b141c,#101e29);color:var(--text)}
+main{max-width:760px;margin:0 auto;padding:24px 14px 50px}.eyebrow{font-size:12px;letter-spacing:.15em;color:var(--accent);font-weight:800}.panel{margin-top:16px;background:rgba(21,35,48,.96);border:1px solid var(--line);border-radius:20px;padding:18px}.title{font-size:30px;font-weight:950;margin:6px 0}.sub{color:var(--muted);font-size:14px}.row{display:grid;gap:10px;margin-top:14px}input{width:100%;border:1px solid var(--line);border-radius:13px;background:#0f1c26;color:var(--text);padding:13px;font-size:16px}.btn{border:0;border-radius:14px;padding:12px 16px;font-weight:900;cursor:pointer;min-height:46px}.primary{background:var(--accent);color:#1a1a1a}.danger{background:var(--bad);color:white}.ghost{background:#213746;color:var(--text);border:1px solid var(--line)}.hidden{display:none}.status{margin-top:12px;font-size:13px;color:var(--muted)}.good{color:var(--good)}.warn{color:#ffcf70}.bad{color:var(--bad)}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}.stat{background:#10202c;border:1px solid var(--line);border-radius:15px;padding:14px;text-align:center}.stat small{display:block;color:var(--muted)}.stat strong{font-size:24px}.rank-list{display:grid;gap:7px;margin-top:12px}.rank{display:grid;grid-template-columns:38px 1fr auto;gap:8px;align-items:center;background:#10202c;border:1px solid var(--line);border-radius:13px;padding:10px}.rank .meta{color:var(--muted);font-size:11px}.pts{font-weight:900;color:var(--accent)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+</style>
+</head>
+<body>
+<main>
+<div class="eyebrow">SPPC SAFETY CARD GAME</div>
+<div class="title">관리자 페이지</div>
+<div class="sub">관리자 로그인 후 참가 기록 조회 및 전체 초기화가 가능합니다.</div>
+
+<section id="loginPanel" class="panel">
+  <h2>관리자 로그인</h2>
+  <div class="row">
+    <input id="email" type="email" placeholder="관리자 이메일">
+    <input id="password" type="password" placeholder="비밀번호">
+    <button id="loginBtn" class="btn primary">관리자 로그인</button>
+  </div>
+  <div id="loginStatus" class="status"></div>
+</section>
+
+<section id="adminPanel" class="panel hidden">
+  <div class="actions">
+    <button id="refreshBtn" class="btn ghost">순위 새로고침</button>
+    <button id="logoutBtn" class="btn ghost">로그아웃</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><small>현재 참가자</small><strong id="count">0명</strong></div>
+    <div class="stat"><small>최고 점수</small><strong id="best">-</strong></div>
+  </div>
+  <h2>TOP 10</h2>
+  <div id="ranking" class="rank-list"></div>
+
+  <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--line)">
+    <h2 style="color:var(--bad)">기록 초기화</h2>
+    <div class="sub">전체 참가자의 점수 기록이 삭제됩니다. 게임 페이지와 설정은 삭제되지 않습니다.</div>
+    <button id="resetBtn" class="btn danger" style="margin-top:12px">⚠ 전체 기록 초기화</button>
+  </div>
+  <div id="adminStatus" class="status"></div>
+</section>
+</main>
+<script>
+const CFG={
+  SUPABASE_URL:'https://ejzbelmlwojexgdhdgtb.supabase.co',
+  SUPABASE_ANON_KEY:'sb_publishable_gW2HIn-QHAtlftpzFTMq-w_LZdSRret'
+};
+
+async function authRequest(path, options={}){
+  const r=await fetch(CFG.SUPABASE_URL+'/auth/v1/'+path,{
+    ...options,
+    headers:{
+      apikey:CFG.SUPABASE_ANON_KEY,
+      'Content-Type':'application/json',
+      ...(options.headers||{})
+    }
+  });
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(data.msg||data.message||JSON.stringify(data));
+  return data;
+}
+async function dbRequest(path, token, options={}){
+  const r=await fetch(CFG.SUPABASE_URL+'/rest/v1/'+path,{
+    ...options,
+    headers:{
+      apikey:CFG.SUPABASE_ANON_KEY,
+      Authorization:'Bearer '+token,
+      'Content-Type':'application/json',
+      ...(options.headers||{})
+    }
+  });
+  if(!r.ok) throw new Error(await r.text());
+  return r.status===204?null:r.json();
+}
+function setSession(s){localStorage.setItem('sppc_admin_session',JSON.stringify(s))}
+function getSession(){try{return JSON.parse(localStorage.getItem('sppc_admin_session'))}catch{return null}}
+function clearSession(){localStorage.removeItem('sppc_admin_session')}
+async function login(){
+  const email=document.querySelector('#email').value.trim();
+  const password=document.querySelector('#password').value;
+  const st=document.querySelector('#loginStatus');
+  if(!email||!password){st.innerHTML='<span class="warn">이메일과 비밀번호를 입력하세요.</span>';return}
+  try{
+    const s=await authRequest('token?grant_type=password',{method:'POST',body:JSON.stringify({email,password})});
+    setSession(s);
+    st.innerHTML='<span class="good">로그인 성공</span>';
+    showAdmin();
+  }catch(e){st.innerHTML='<span class="bad">로그인 실패: '+e.message+'</span>'}
+}
+async function currentSession(){
+  const s=getSession();
+  if(!s?.access_token)return null;
+  try{
+    const me=await authRequest('user',{headers:{Authorization:'Bearer '+s.access_token}});
+    return {...s,user:me};
+  }catch{
+    clearSession();return null;
+  }
+}
+async function showAdmin(){
+  const s=await currentSession();
+  if(!s)return;
+  document.querySelector('#loginPanel').classList.add('hidden');
+  document.querySelector('#adminPanel').classList.remove('hidden');
+  await refresh();
+}
+async function refresh(){
+  const s=await currentSession(); if(!s)return;
+  const status=document.querySelector('#adminStatus');
+  try{
+    const rows=await dbRequest('scores?select=name,score,pairs,remaining,tries&order=score.desc,remaining.desc,tries.asc',s.access_token);
+    document.querySelector('#count').textContent=rows.length+'명';
+    document.querySelector('#best').textContent=rows.length?Number(rows[0].score).toFixed(1)+'점':'-';
+    const top=rows.slice(0,10), box=document.querySelector('#ranking');
+    box.innerHTML='';
+    if(!top.length){box.innerHTML='<div class="sub">저장된 기록이 없습니다.</div>';return}
+    top.forEach((x,i)=>{
+      const d=document.createElement('div');d.className='rank';
+      d.innerHTML='<div>'+(i<3?['🥇','🥈','🥉'][i]:i+1)+'</div><div><div style="font-weight:800"></div><div class="meta">'+x.pairs+'쌍 · '+x.tries+'회 · '+Number(x.remaining).toFixed(1)+'초 남음</div></div><div class="pts">'+Number(x.score).toFixed(1)+'</div>';
+      d.children[1].children[0].textContent=x.name;box.appendChild(d);
+    });
+    status.textContent='';
+  }catch(e){status.innerHTML='<span class="bad">조회 오류: '+e.message+'</span>'}
+}
+async function resetAll(){
+  if(!confirm('모든 참가자 기록을 삭제하시겠습니까?'))return;
+  if(!confirm('정말 삭제합니다. 이 작업은 되돌릴 수 없습니다. 계속할까요?'))return;
+  const s=await currentSession(); if(!s)return;
+  const status=document.querySelector('#adminStatus');
+  try{
+    await dbRequest('scores?name=neq.__never_match__',s.access_token,{method:'DELETE',headers:{Prefer:'return=minimal'}});
+    status.innerHTML='<span class="good">전체 기록을 초기화했습니다.</span>';
+    await refresh();
+  }catch(e){status.innerHTML='<span class="bad">초기화 실패: '+e.message+'</span>'}
+}
+document.querySelector('#loginBtn').addEventListener('click',login);
+document.querySelector('#refreshBtn').addEventListener('click',refresh);
+document.querySelector('#resetBtn').addEventListener('click',resetAll);
+document.querySelector('#logoutBtn').addEventListener('click',()=>{clearSession();location.reload()});
+document.querySelector('#password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+showAdmin();
+</script>
+</body>
+</html>
