@@ -44,7 +44,39 @@ function score(completed,rem){const success=pairs*8;const time=completed?(rem/GA
 function finish(completed){if(!playing)return;playing=false;if(timer)clearInterval(timer);timer=null;const rem=Math.max(0,(endAt-performance.now())/1000);pendingTimers.forEach(clearTimeout);pendingTimers=[];deck.forEach(c=>c.pending=false);renderAll();$('#time').textContent=rem.toFixed(1)+'초';const sc=score(completed,rem),name=$('#name').value.trim();resultData={name,score:+sc.total.toFixed(1),pairs,remaining:+rem.toFixed(1),tries};$('#resultHeadline').textContent=completed?'10쌍 전부 성공!':'30초 도전 종료';$('#finalScore').textContent=sc.total.toFixed(1)+'점';$('#breakdown').innerHTML='성공점수 '+sc.success.toFixed(1)+' / 80점<br>시간점수 '+sc.time.toFixed(1)+' / 15점<br>정확도점수 '+sc.accuracy.toFixed(1)+' / 5점';$('#result').style.display='block';$('#startBtn').disabled=false;$('#name').disabled=false;$('#status').innerHTML='<span class="good">기록 저장 버튼을 눌러 TOP 10에 반영하세요.</span>'}
 function configured(){return !CFG.SUPABASE_URL.startsWith('YOUR_')&&!CFG.SUPABASE_ANON_KEY.startsWith('YOUR_')}
 async function api(path,opt={}){const r=await fetch(CFG.SUPABASE_URL+'/rest/v1/'+path,{...opt,headers:{apikey:CFG.SUPABASE_ANON_KEY,Authorization:'Bearer '+CFG.SUPABASE_ANON_KEY,'Content-Type':'application/json',...(opt.headers||{})}});if(!r.ok)throw new Error(await r.text());return r.status===204?null:r.json()}
-async function save(){if(!resultData)return;if(!configured()){$('#status').innerHTML='<span class="warn">공용 랭킹 DB가 아직 연결되지 않았습니다. README의 Supabase 설정을 완료해주세요.</span>';return}try{await api('scores?on_conflict=name',{method:'POST',headers:{Prefer:'resolution=merge-duplicates'},body:JSON.stringify(resultData)});$('#status').innerHTML='<span class="good">기록 저장 완료!</span>';await loadRank()}catch(err){$('#status').textContent='저장 오류: '+err.message}}
+function isBetterRecord(next,prev){
+  if(!prev)return true;
+  if(next.score!==Number(prev.score))return next.score>Number(prev.score);
+  if(next.pairs!==Number(prev.pairs))return next.pairs>Number(prev.pairs);
+  if(next.remaining!==Number(prev.remaining))return next.remaining>Number(prev.remaining);
+  return next.tries<Number(prev.tries);
+}
+async function save(){
+  if(!resultData)return;
+  if(!configured()){
+    $('#status').innerHTML='<span class="warn">공용 랭킹 DB가 아직 연결되지 않았습니다. README의 Supabase 설정을 완료해주세요.</span>';
+    return;
+  }
+  try{
+    const qName=encodeURIComponent(resultData.name);
+    const existing=await api('scores?select=name,score,pairs,remaining,tries&name=eq.'+qName+'&limit=1');
+    const prev=existing&&existing[0]?existing[0]:null;
+    if(prev&&!isBetterRecord(resultData,prev)){
+      $('#status').innerHTML='<span class="warn">기존 최고 기록이 더 높아 유지했습니다. 현재 최고점: '+Number(prev.score).toFixed(1)+'점</span>';
+      await loadRank();
+      return;
+    }
+    await api('scores?on_conflict=name',{
+      method:'POST',
+      headers:{Prefer:'resolution=merge-duplicates'},
+      body:JSON.stringify(resultData)
+    });
+    $('#status').innerHTML='<span class="good">'+(prev?'최고 기록을 갱신했습니다!':'기록 저장 완료!')+'</span>';
+    await loadRank();
+  }catch(err){
+    $('#status').textContent='저장 오류: '+err.message;
+  }
+}
 async function loadRank(){if(!configured()){renderDemoRank();return}try{const rows=await api('scores?select=name,score,pairs,remaining,tries&order=score.desc,remaining.desc,tries.asc&limit=10');renderRank(rows)}catch(err){$('#status').textContent='순위 조회 오류: '+err.message}}
 function renderDemoRank(){renderRank([])}
 function renderRank(rows){const r=$('#ranking');r.innerHTML='';if(!rows.length){r.innerHTML='<div class="rank-sub">아직 저장된 기록이 없습니다.</div>';return}rows.forEach((x,i)=>{const d=document.createElement('div');d.className='rank-row';d.innerHTML='<div>'+(i<3?['🥇','🥈','🥉'][i]:i+1)+'</div><div><div class="who"></div><div class="meta">'+x.pairs+'쌍 · '+x.tries+'회 · '+x.remaining.toFixed(1)+'초 남음</div></div><div class="pts">'+x.score.toFixed(1)+'</div>';d.querySelector('.who').textContent=x.name;r.appendChild(d)})}
